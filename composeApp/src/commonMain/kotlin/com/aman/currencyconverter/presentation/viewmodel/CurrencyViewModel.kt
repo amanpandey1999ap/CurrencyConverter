@@ -1,18 +1,37 @@
 package com.aman.currencyconverter.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.aman.core.domain.onError
+import com.aman.core.domain.onSuccess
+import com.aman.currencyconverter.domain.repository.CurrencyExchangeRepository
 import com.aman.currencyconverter.presentation.model.CurrencyConverterAction
 import com.aman.currencyconverter.presentation.model.CurrencyConverterState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class CurrencyViewModel : ViewModel() {
+class CurrencyViewModel(
+    private val repository: CurrencyExchangeRepository
+) : ViewModel() {
 
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
 
     private val _state = MutableStateFlow(CurrencyConverterState())
-    val state: StateFlow<CurrencyConverterState> = _state.asStateFlow()
+    val state: StateFlow<CurrencyConverterState> = _state
+        .onStart {
+            loadRates()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            _state.value
+        )
 
     fun handleAction(action: CurrencyConverterAction) {
         when (action) {
@@ -29,7 +48,7 @@ class CurrencyViewModel : ViewModel() {
             }
 
             is CurrencyConverterAction.LoadCurrencies -> {
-                //loadRates()
+                loadRates()
             }
 
             is CurrencyConverterAction.Convert -> {
@@ -37,5 +56,28 @@ class CurrencyViewModel : ViewModel() {
             }
         }
     }
+
+    private fun loadRates() = viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+
+            repository.fetchExchangeRates()
+                .onSuccess { response ->
+                    _state.update {
+                        it.copy(
+                            currencies = response.rates.keys.toList(),
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+                .onError { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "Failed to load rates: $error"
+                        )
+                    }
+                }
+        }
 
 }

@@ -1,10 +1,10 @@
-package com.aman.currencyconverter.domain.model
+package com.aman.currencyconverter.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ExchangeRateResponse(
+data class ExchangeRateDTO(
     val result: String,
     val provider: String,
     val documentation: String,
