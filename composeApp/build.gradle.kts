@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.navigation.compose)
             implementation(libs.bundles.ktor)
+            implementation(libs.compose.material.icons)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
