@@ -5,7 +5,7 @@ data class CurrencyConverterState(
     val currencies: List<String> = emptyList(),
     val fromCurrency: String = "USD",
     val toCurrency: String = "INR",
-    val amount: String = "0.0",
-    val convertedAmount: String? = null,
+    val fromAmount: String = "0.0",
+    val toAmount: String = "0.0",
     val errorMessage: String? = null
 )

@@ -3,6 +3,7 @@ package com.aman.currencyconverter.currencyConverterFeature.presentation.viewmod
 import androidx.lifecycle.ViewModel
 import com.aman.currencyconverter.core.domain.onError
 import com.aman.currencyconverter.core.domain.onSuccess
+import com.aman.currencyconverter.core.utils.recalculateConvertedAmount
 import com.aman.currencyconverter.currencyConverterFeature.domain.model.ExchangeRate
 import com.aman.currencyconverter.currencyConverterFeature.domain.repository.CurrencyExchangeRepository
 import com.aman.currencyconverter.currencyConverterFeature.presentation.model.CurrencyConverterAction
@@ -27,27 +28,29 @@ class CurrencyViewModel(
 
     private val _state = MutableStateFlow(CurrencyConverterState())
     val state: StateFlow<CurrencyConverterState> = _state
-        .onStart {
-            loadRates()
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            _state.value
-        )
+        .onStart { loadRates() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     fun handleAction(action: CurrencyConverterAction) {
         when (action) {
             is CurrencyConverterAction.FromCurrencyChanged -> {
-                _state.update { it.copy(fromCurrency = action.currency, convertedAmount = null) }
+                _state.update { it.copy(fromCurrency = action.currency) }
+                recalculateToAmount()
             }
 
             is CurrencyConverterAction.ToCurrencyChanged -> {
-                _state.update { it.copy(toCurrency = action.currency, convertedAmount = null) }
+                _state.update { it.copy(toCurrency = action.currency) }
+                recalculateToAmount()
             }
 
-            is CurrencyConverterAction.AmountChanged -> {
-                _state.update { it.copy(amount = action.amount, convertedAmount = null) }
+            is CurrencyConverterAction.FromAmountChanged -> {
+                _state.update { it.copy(fromAmount = action.amount) }
+                recalculateToAmount()
+            }
+
+            is CurrencyConverterAction.ToAmountChanged -> {
+                _state.update { it.copy(toAmount = action.amount) }
+                recalculateFromAmount()
             }
 
             is CurrencyConverterAction.SwapCurrencies -> {
@@ -55,18 +58,13 @@ class CurrencyViewModel(
                     it.copy(
                         fromCurrency = it.toCurrency,
                         toCurrency = it.fromCurrency,
-                        convertedAmount = null
+                        fromAmount = it.toAmount,
+                        toAmount = it.fromAmount
                     )
                 }
             }
 
-            is CurrencyConverterAction.LoadCurrencies -> {
-                loadRates()
-            }
-
-            is CurrencyConverterAction.Convert -> {
-                convertAmount()
-            }
+            is CurrencyConverterAction.LoadCurrencies -> loadRates()
         }
     }
 
@@ -78,21 +76,42 @@ class CurrencyViewModel(
                 cachedRates = response
                 _state.update {
                     it.copy(
-                        currencies = response.rates.keys.toList(),
+                        currencies = response.rates.keys.sorted(),
                         isLoading = false,
                         errorMessage = null
                     )
                 }
+                recalculateToAmount()
             }
             .onError { error ->
                 _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = "Failed to load rates: $error"
-                    )
+                    it.copy(isLoading = false, errorMessage = "Failed to load rates: $error")
                 }
             }
     }
 
-    private fun convertAmount() {}
+    private fun recalculateToAmount() {
+        val state = _state.value
+        recalculateConvertedAmount(
+            sourceCurrency = state.fromCurrency,
+            targetCurrency = state.toCurrency,
+            sourceAmount = state.fromAmount,
+            rates = cachedRates?.rates
+        ) { result ->
+            _state.update { it.copy(toAmount = result) }
+        }
+    }
+
+    private fun recalculateFromAmount() {
+        val state = _state.value
+        recalculateConvertedAmount(
+            sourceCurrency = state.toCurrency,
+            targetCurrency = state.fromCurrency,
+            sourceAmount = state.toAmount,
+            rates = cachedRates?.rates
+        ) { result ->
+            _state.update { it.copy(fromAmount = result) }
+        }
+    }
+
 }
