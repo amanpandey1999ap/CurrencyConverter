@@ -6,4 +6,5 @@ sealed class CurrencyConverterAction {
     data class AmountChanged(val amount: String) : CurrencyConverterAction()
     data object Convert : CurrencyConverterAction()
     data object LoadCurrencies : CurrencyConverterAction()
+    data object SwapCurrencies : CurrencyConverterAction()
 }

@@ -3,6 +3,7 @@ package com.aman.currencyconverter.currencyConverterFeature.presentation.viewmod
 import androidx.lifecycle.ViewModel
 import com.aman.currencyconverter.core.domain.onError
 import com.aman.currencyconverter.core.domain.onSuccess
+import com.aman.currencyconverter.currencyConverterFeature.domain.model.ExchangeRate
 import com.aman.currencyconverter.currencyConverterFeature.domain.repository.CurrencyExchangeRepository
 import com.aman.currencyconverter.currencyConverterFeature.presentation.model.CurrencyConverterAction
 import com.aman.currencyconverter.currencyConverterFeature.presentation.model.CurrencyConverterState
@@ -22,6 +23,8 @@ class CurrencyViewModel(
 
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
 
+    private var cachedRates: ExchangeRate? = null
+
     private val _state = MutableStateFlow(CurrencyConverterState())
     val state: StateFlow<CurrencyConverterState> = _state
         .onStart {
@@ -36,15 +39,25 @@ class CurrencyViewModel(
     fun handleAction(action: CurrencyConverterAction) {
         when (action) {
             is CurrencyConverterAction.FromCurrencyChanged -> {
-                _state.update { it.copy(fromCurrency = action.currency) }
+                _state.update { it.copy(fromCurrency = action.currency, convertedAmount = null) }
             }
 
             is CurrencyConverterAction.ToCurrencyChanged -> {
-                _state.update { it.copy(toCurrency = action.currency) }
+                _state.update { it.copy(toCurrency = action.currency, convertedAmount = null) }
             }
 
             is CurrencyConverterAction.AmountChanged -> {
-                _state.update { it.copy(amount = action.amount) }
+                _state.update { it.copy(amount = action.amount, convertedAmount = null) }
+            }
+
+            is CurrencyConverterAction.SwapCurrencies -> {
+                _state.update {
+                    it.copy(
+                        fromCurrency = it.toCurrency,
+                        toCurrency = it.fromCurrency,
+                        convertedAmount = null
+                    )
+                }
             }
 
             is CurrencyConverterAction.LoadCurrencies -> {
@@ -52,32 +65,34 @@ class CurrencyViewModel(
             }
 
             is CurrencyConverterAction.Convert -> {
-                //convertAmount()
+                convertAmount()
             }
         }
     }
 
     private fun loadRates() = viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, errorMessage = null) }
+        _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            repository.fetchExchangeRates()
-                .onSuccess { response ->
-                    _state.update {
-                        it.copy(
-                            currencies = response.rates.keys.toList(),
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                    }
+        repository.fetchExchangeRates()
+            .onSuccess { response ->
+                cachedRates = response
+                _state.update {
+                    it.copy(
+                        currencies = response.rates.keys.toList(),
+                        isLoading = false,
+                        errorMessage = null
+                    )
                 }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "Failed to load rates: $error"
-                        )
-                    }
+            }
+            .onError { error ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Failed to load rates: $error"
+                    )
                 }
-        }
+            }
+    }
 
+    private fun convertAmount() {}
 }

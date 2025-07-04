@@ -19,36 +19,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun CurrencyDropdown(
-    label: String,
     selectedCurrency: String,
     currencies: List<String>,
-    onCurrencySelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onCurrencySelected: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = modifier
-            .clickable { expanded = true }
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    Box {
+        Row(
+            modifier = Modifier
+                .clickable { expanded = true }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                text = selectedCurrency.ifBlank { label },
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (selectedCurrency.isBlank())
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                else
-                    MaterialTheme.colorScheme.onSurface
+                text = selectedCurrency,
+                color = Color.White,
+                style = MaterialTheme.typography.bodyLarge
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = "Dropdown Arrow",
-                modifier = Modifier.size(20.dp)
+                tint = Color.White
             )
         }
 
