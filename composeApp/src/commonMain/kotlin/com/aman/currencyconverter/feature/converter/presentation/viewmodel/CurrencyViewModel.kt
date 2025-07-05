@@ -6,7 +6,7 @@ import com.aman.currencyconverter.core.result.onSuccess
 import com.aman.currencyconverter.core.utils.ConversionInput
 import com.aman.currencyconverter.core.utils.convertAmount
 import com.aman.currencyconverter.feature.converter.domain.model.ExchangeRate
-import com.aman.currencyconverter.feature.converter.domain.repository.CurrencyExchangeRepository
+import com.aman.currencyconverter.feature.converter.domain.usecase.FetchExchangeRatesUseCase
 import com.aman.currencyconverter.feature.converter.presentation.model.CurrencyConverterAction
 import com.aman.currencyconverter.feature.converter.presentation.model.CurrencyConverterState
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CurrencyViewModel(
-    private val repository: CurrencyExchangeRepository
+    private val fetchExchangeRatesUseCase: FetchExchangeRatesUseCase
 ) : ViewModel() {
 
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
@@ -75,7 +75,7 @@ class CurrencyViewModel(
     private fun loadRates() = viewModelScope.launch {
         _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-        repository.fetchExchangeRates()
+        fetchExchangeRatesUseCase()
             .onSuccess { response ->
                 cachedRates = response
                 _state.update {

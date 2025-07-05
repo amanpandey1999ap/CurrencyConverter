@@ -6,6 +6,8 @@ import com.aman.currencyconverter.feature.converter.data.remote.KtorRemoteExchan
 import com.aman.currencyconverter.feature.converter.data.remote.RemoteExchangeRateDataSource
 import com.aman.currencyconverter.feature.converter.data.repository.DefaultCurrencyExchangeRepository
 import com.aman.currencyconverter.feature.converter.domain.repository.CurrencyExchangeRepository
+import com.aman.currencyconverter.feature.converter.domain.usecase.DefaultFetchExchangeRatesUseCase
+import com.aman.currencyconverter.feature.converter.domain.usecase.FetchExchangeRatesUseCase
 import com.aman.currencyconverter.feature.converter.presentation.viewmodel.CurrencyViewModel
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
@@ -24,6 +26,7 @@ val sharedModule = module {
     singleOf(::KtorRemoteExchangeRateDataSource).bind<RemoteExchangeRateDataSource>()
     singleOf(::DefaultCurrencyExchangeRepository).bind<CurrencyExchangeRepository>()
     singleOf(::StoreManager)
+    singleOf(::DefaultFetchExchangeRatesUseCase).bind<FetchExchangeRatesUseCase>()
 
     viewModelOf(::CurrencyViewModel)
 }
