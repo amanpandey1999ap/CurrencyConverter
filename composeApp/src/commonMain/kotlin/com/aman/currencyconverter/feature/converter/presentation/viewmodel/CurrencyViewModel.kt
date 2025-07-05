@@ -66,6 +66,9 @@ class CurrencyViewModel(
             }
 
             is CurrencyConverterAction.LoadCurrencies -> loadRates()
+            is CurrencyConverterAction.ErrorDismissed -> {
+                _state.update { it.copy(errorMessage = null) }
+            }
         }
     }
 
@@ -86,7 +89,7 @@ class CurrencyViewModel(
             }
             .onError { error ->
                 _state.update {
-                    it.copy(isLoading = false, errorMessage = "Failed to load rates: $error")
+                    it.copy(isLoading = false, errorMessage = error)
                 }
             }
     }
