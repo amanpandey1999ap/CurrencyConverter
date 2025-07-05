@@ -20,9 +20,12 @@ A modern **Currency Converter App** built with **Kotlin Multiplatform (KMP)**. C
 
 ## 📸 Screenshots
 
-### Android UI
+### UI
 
-<img src="assets/screenshots/Screenshot_20250705_221813_Currency_Converter.jpg" width="300" height="600" />
+<p float="left">
+ <img src="assets/screenshots/Screenshot_20250705_221813_Currency_Converter.jpg" width="300" height="600" />
+ <img src="assets/screenshots/Screenshot_desktop.png" width="500" height="350" />
+</p>
 
 ---
 
