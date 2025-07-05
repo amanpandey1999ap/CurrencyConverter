@@ -22,6 +22,9 @@ navigationCompose = "2.8.0-alpha10"
 lifecycleViewModel = "2.9.1"
 ktor = "2.3.12"
 datastore = "1.1.7"
+coreKtx = "1.6.1"
+composeTest = "1.8.3"
+coroutines-test = "1.10.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -55,6 +58,11 @@ ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 compose-material-icons = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version = "1.6.10" }
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+compose-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeTest" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeTest" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtx" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

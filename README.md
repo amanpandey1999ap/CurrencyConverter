@@ -15,6 +15,7 @@ A modern **Currency Converter App** built with **Kotlin Multiplatform (KMP)**. C
 - 💾 Local caching using DataStore (KMM-compatible)
 - 💡 Platform-specific error messages (Toast on Android, Alert on iOS)
 - ✅ Clean Architecture (Domain, Data, Presentation)
+- 🧪 Unit-testable ViewModel logic
 
 ---
 
@@ -39,6 +40,7 @@ A modern **Currency Converter App** built with **Kotlin Multiplatform (KMP)**. C
 | Serialization| Kotlinx Serialization |
 | Caching      | DataStore (KMM) |
 | DI           | Koin |
+| Testing      | Kotlinx Coroutines Test, Kotlin Test |
 
 ---
 
