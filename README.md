@@ -1,8 +1,9 @@
 # 🌍 Currency Converter - Kotlin Multiplatform App
 
-A modern **Currency Converter App** built with **Kotlin Multiplatform Mobile (KMM)**. Convert between global currencies with real-time exchange rates, seamless two-way conversion, and platform-specific error handling.
+A modern **Currency Converter App** built with **Kotlin Multiplatform (KMP)**. Convert between global currencies with real-time exchange rates, seamless two-way conversion, and platform-specific error handling.
 
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+- This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+- Build with shared UI (with Compose Multiplatform UI framework).
 
 ---
 
