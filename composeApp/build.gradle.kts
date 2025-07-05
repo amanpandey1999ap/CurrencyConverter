@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.bundles.ktor)
             implementation(libs.compose.material.icons)
+            api(libs.datastore.preferences)
+            api(libs.datastore)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
